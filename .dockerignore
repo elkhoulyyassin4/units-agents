@@ -1,0 +1,6 @@
+node_modules
+.env
+*.md
+data/
+campaign-*.md
+units-lead-pipeline.xlsx

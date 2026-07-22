@@ -43,6 +43,23 @@ cron.schedule('0 * * * *', () => leadScorer.run().catch(console.error));
 // Follow-up pass every morning at 9:00
 cron.schedule('0 9 * * *', () => leadFollowUp.run().catch(console.error));
 
+// ---- Test email (sends ONLY to the configured owner address, to verify SMTP) ----
+const { sendEmail } = require('./utils/email');
+app.get('/test-email', async (_req, res, next) => {
+  try {
+    if (!process.env.SMTP_HOST || !process.env.SMTP_USER) {
+      return res.status(400).json({ ok: false, error: 'SMTP not configured yet. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS.' });
+    }
+    const to = process.env.SMTP_USER; // only ever emails the owner
+    await sendEmail({
+      to,
+      subject: 'Units Agents — test email',
+      text: 'This is a test from your Units lead pipeline. If you received this, follow-up emails can send automatically.',
+    });
+    res.json({ ok: true, sentTo: to });
+  } catch (e) { next(e); }
+});
+
 // ---- Error handler ----
 app.use((err, _req, res, _next) => {
   console.error(err);

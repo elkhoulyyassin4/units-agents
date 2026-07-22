@@ -50,7 +50,7 @@ app.get('/test-email', async (_req, res, next) => {
     if (!process.env.SMTP_HOST || !process.env.SMTP_USER) {
       return res.status(400).json({ ok: false, error: 'SMTP not configured yet. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS.' });
     }
-    const to = process.env.SMTP_USER; // only ever emails the owner
+    const to = process.env.TEST_EMAIL_TO || process.env.SMTP_USER; // configured owner address only
     await sendEmail({
       to,
       subject: 'Units Agents — test email',
